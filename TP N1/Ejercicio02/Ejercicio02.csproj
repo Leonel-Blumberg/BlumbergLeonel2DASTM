@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="iu5eyuor.d2u~" />
+    <None Remove="n22irith.zns~" />
+    <None Remove="u1ib4ae4.zjz~" />
+  </ItemGroup>
+
+</Project>
