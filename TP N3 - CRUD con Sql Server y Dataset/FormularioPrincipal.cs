@@ -1,9 +1,4 @@
-using System.CodeDom;
-using System.Drawing.Text;
-using System.Linq.Expressions;
-using TP_N2___CRUD_con_Sql_Server_y_ADO.NET.Clases;
-
-namespace TP_N2___CRUD_con_Sql_Server_y_ADO.NET
+namespace TP_N3___CRUD_con_Sql_Server_y_Dataset
 {
     public partial class FormularioPrincipal : Form
     {
@@ -32,27 +27,23 @@ namespace TP_N2___CRUD_con_Sql_Server_y_ADO.NET
         {
             if (VerificarDatos() == true)
             {
-                DatosDB datosDB = new();
+                DatosDSTableAdapters.Personas2TableAdapter tableAdapter = new();
 
-                try
-                {
-                    if (id == null)
-                        datosDB.AgregarPersona(txtNombre.Text, int.Parse(txtEdad.Text));
-                    else
-                        datosDB.EditarPersona(txtNombre.Text, int.Parse(txtEdad.Text), (int)id);
+                if (id == null)
+                    tableAdapter.AgregarPersona(txtNombre.Text.Trim(), int.Parse(txtEdad.Text.Trim()), rbMasculino.Checked ? "Masculino" : rbFemenino.Checked ? "Femenino" : "Otro");
+                else
+                    tableAdapter.EditarPersona(txtNombre.Text.Trim(), int.Parse(txtEdad.Text.Trim()), rbMasculino.Checked ? "Masculino" : rbFemenino.Checked ? "Femenino" : "Otro", (int)id);
 
-                    txtNombre.Text = "";
-                    txtEdad.Text = "";
+                txtNombre.Text = "";
+                txtEdad.Text = "";
+                rbMasculino.Checked = false;
+                rbFemenino.Checked = false;
+                rbOtro.Checked = false;
 
-                    if (id == null)
-                        MessageBox.Show("Persona agregada con éxito.", "Info: Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    else
-                        MessageBox.Show("Persona modificada con éxito.", "Info: Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (DBException ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                if (id == null)
+                    MessageBox.Show("Persona agregada con éxito.", "Info: Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                    MessageBox.Show("Persona modificada con éxito.", "Info: Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 Refrescar();
             }
@@ -62,23 +53,16 @@ namespace TP_N2___CRUD_con_Sql_Server_y_ADO.NET
         {
             int? id = GetID();
 
-            try
+            if (id != null)
             {
-                if (id != null)
-                {
-                    DatosDB datosDB = new();
-                    datosDB.EliminarPersona((int) id);
+                DatosDSTableAdapters.Personas2TableAdapter tableAdapter = new();
+                tableAdapter.EliminarPersona((int)id);
 
-                    MessageBox.Show("Persona eliminada con éxito.", "Info: Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    Refrescar();
-                }
-                else
-                    MessageBox.Show("No se pudo obtener el ID de la persona seleccionada.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Persona eliminada con éxito.", "Info: Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Refrescar();
             }
-            catch (DBException ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            else
+                MessageBox.Show("No se pudo obtener el ID de la persona seleccionada.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         #region HELPER
@@ -104,6 +88,9 @@ namespace TP_N2___CRUD_con_Sql_Server_y_ADO.NET
 
                 if (string.IsNullOrWhiteSpace(txtEdad.Text))
                     throw new DatoIncompletoException("Debe ingresar una edad.");
+
+                if (!rbMasculino.Checked && !rbFemenino.Checked && !rbOtro.Checked)
+                    throw new DatoIncompletoException("Debe seleccionar un sexo.");
             }
             catch (DatoIncompletoException ex)
             {
@@ -121,18 +108,20 @@ namespace TP_N2___CRUD_con_Sql_Server_y_ADO.NET
 
         private void Refrescar()
         {
-            DatosDB datosDB = new();
-            dgvVisDatos.DataSource = datosDB.GetDatos();
+            DatosDSTableAdapters.Personas2TableAdapter tableAdapter = new();
+            DatosDS.Personas2DataTable dataTable = tableAdapter.GetData();
+
+            dgvVisDatos.DataSource = dataTable;
         }
 
         private void DgvVisDatos_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvVisDatos.SelectedRows.Count > 0)
             {
-                btnEditar.BackColor = Color.LightSalmon;
+                btnEditar.BackColor = Color.MediumTurquoise;
                 btnEditar.Enabled = true;
 
-                btnEliminar.BackColor = Color.LightSalmon;
+                btnEliminar.BackColor = Color.MediumTurquoise;
                 btnEliminar.Enabled = true;
             }
             else
