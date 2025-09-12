@@ -1,11 +1,30 @@
-namespace TP_N3___CRUD_con_Sql_Server_y_Dataset
+using Microsoft.EntityFrameworkCore;
+using TP_N4___CRUD_con_Sql_Server_y_Entity_Framework.Models;
+
+namespace TP_N4___CRUD_con_Sql_Server_y_Entity_Framework
 {
     public partial class FormularioPrincipal : Form
     {
         public FormularioPrincipal()
         {
             InitializeComponent();
-            Refrescar();
+
+            ActualizarDTPFechaNacimiento();
+            RefrescarDGV();
+        }
+
+        private void ActualizarDTPFechaNacimiento()
+        {
+            dtpFechaNacimiento.MaxDate = DateTime.Today;
+            dtpFechaNacimiento.Value = DateTime.Today;
+        }
+
+        private void RefrescarDGV()
+        {
+            using CRUDWindowsFormContext db = new();
+            var listaDatos = db.Personas3.ToList();
+            dgvVisDatos.DataSource = listaDatos;
+            dgvVisDatos.Columns["FechadeNacimiento"].HeaderText = "Fecha de Nacimiento";
         }
 
         private void BtnAgregar_Click(object sender, EventArgs e)
@@ -27,25 +46,31 @@ namespace TP_N3___CRUD_con_Sql_Server_y_Dataset
         {
             if (VerificarDatos() == true)
             {
-                DatosDSTableAdapters.Personas2TableAdapter tableAdapter = new();
+                using CRUDWindowsFormContext db = new();
+                Personas3 oPersonas3 = new();
+
+                if (id != null)
+                    oPersonas3 = db.Personas3.Find(id)!;
+
+                oPersonas3.Nombre = txtNombre.Text.Trim();
+                oPersonas3.Correo = txtCorreo.Text.Trim();
+                oPersonas3.FechaDeNacimiento = DateOnly.FromDateTime(dtpFechaNacimiento.Value);
 
                 if (id == null)
-                    tableAdapter.AgregarPersona(txtNombre.Text.Trim(), int.Parse(txtEdad.Text.Trim()), rbMasculino.Checked ? "Masculino" : rbFemenino.Checked ? "Femenino" : "Otro");
-                else
-                    tableAdapter.EditarPersona(txtNombre.Text.Trim(), int.Parse(txtEdad.Text.Trim()), rbMasculino.Checked ? "Masculino" : rbFemenino.Checked ? "Femenino" : "Otro", (int)id);
+                    db.Personas3.Add(oPersonas3);
+
+                db.SaveChanges();
 
                 txtNombre.Text = "";
-                txtEdad.Text = "";
-                rbMasculino.Checked = false;
-                rbFemenino.Checked = false;
-                rbOtro.Checked = false;
+                txtCorreo.Text = "";
+                ActualizarDTPFechaNacimiento();
 
                 if (id == null)
                     MessageBox.Show("Persona agregada con éxito.", "Info: Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
                     MessageBox.Show("Persona modificada con éxito.", "Info: Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                Refrescar();
+                RefrescarDGV();
             }
         }
 
@@ -55,11 +80,14 @@ namespace TP_N3___CRUD_con_Sql_Server_y_Dataset
 
             if (id != null)
             {
-                DatosDSTableAdapters.Personas2TableAdapter tableAdapter = new();
-                tableAdapter.EliminarPersona((int)id);
+                using CRUDWindowsFormContext db = new();
+
+                Personas3 oPersonas3 = db.Personas3.Find(id)!;
+                db.Personas3.Remove(oPersonas3);
+                db.SaveChanges();
 
                 MessageBox.Show("Persona eliminada con éxito.", "Info: Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Refrescar();
+                RefrescarDGV();
             }
             else
                 MessageBox.Show("No se pudo obtener el ID de la persona seleccionada.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -80,11 +108,8 @@ namespace TP_N3___CRUD_con_Sql_Server_y_Dataset
                 if (string.IsNullOrWhiteSpace(txtNombre.Text))
                     throw new DatoIncompletoException("Debe ingresar un nombre.");
 
-                if (string.IsNullOrWhiteSpace(txtEdad.Text))
-                    throw new DatoIncompletoException("Debe ingresar una edad.");
-
-                if (!rbMasculino.Checked && !rbFemenino.Checked && !rbOtro.Checked)
-                    throw new DatoIncompletoException("Debe seleccionar un sexo.");
+                if (string.IsNullOrWhiteSpace(txtCorreo.Text))
+                    throw new DatoIncompletoException("Debe ingresar un correo.");
             }
             catch (DatoIncompletoException ex)
             {
@@ -97,25 +122,17 @@ namespace TP_N3___CRUD_con_Sql_Server_y_Dataset
 
         private void BtnRefrescar_Click(object sender, EventArgs e)
         {
-            Refrescar();
-        }
-
-        private void Refrescar()
-        {
-            DatosDSTableAdapters.Personas2TableAdapter tableAdapter = new();
-            DatosDS.Personas2DataTable dataTable = tableAdapter.GetData();
-
-            dgvVisDatos.DataSource = dataTable;
+            RefrescarDGV();
         }
 
         private void DgvVisDatos_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvVisDatos.SelectedRows.Count > 0)
             {
-                btnEditar.BackColor = Color.MediumTurquoise;
+                btnEditar.BackColor = Color.DarkOrange;
                 btnEditar.Enabled = true;
 
-                btnEliminar.BackColor = Color.MediumTurquoise;
+                btnEliminar.BackColor = Color.DarkOrange;
                 btnEliminar.Enabled = true;
             }
             else
@@ -126,35 +143,6 @@ namespace TP_N3___CRUD_con_Sql_Server_y_Dataset
                 btnEliminar.BackColor = Color.Silver;
                 btnEliminar.Enabled = false;
             }
-        }
-
-        private void PermitirSoloNumeros_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            char c = e.KeyChar;
-
-            if (char.IsControl(c))
-                return;
-
-            if (char.IsDigit(c))
-                return;
-
-            e.Handled = true;
-        }
-
-        private void PermitirSoloNumeros_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Control && e.KeyCode == Keys.V)
-            {
-                string texto = Clipboard.GetText();
-
-                if (!EsNumeroValido(texto))
-                    e.SuppressKeyPress = true;
-            }
-        }
-
-        private static bool EsNumeroValido(string texto)
-        {
-            return texto.All(char.IsDigit);
         }
 
         private void BtnSalir_Click(object sender, EventArgs e)

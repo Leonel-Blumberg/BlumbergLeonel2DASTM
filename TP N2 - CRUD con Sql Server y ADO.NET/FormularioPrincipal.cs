@@ -84,14 +84,8 @@ namespace TP_N2___CRUD_con_Sql_Server_y_ADO.NET
         #region HELPER
         private int? GetID()
         {
-            try
-            {
-                return int.Parse(dgvVisDatos.Rows[dgvVisDatos.CurrentRow.Index].Cells[0].Value.ToString()!);
-            }
-            catch
-            {
-                return null;
-            }
+            try { return int.Parse(dgvVisDatos.Rows[dgvVisDatos.CurrentRow.Index].Cells[0].Value.ToString()!); }
+            catch { return null; }
         }
         #endregion
 

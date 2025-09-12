@@ -17,6 +17,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TP03", "TP03", "{DB9117FE-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TP N3 - CRUD con Sql Server y Dataset", "TP N3 - CRUD con Sql Server y Dataset\TP N3 - CRUD con Sql Server y Dataset.csproj", "{D7CC343C-5B43-4311-90D0-086ADDF5960F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TP04", "TP04", "{CC33A506-E8A7-4AF3-92FF-C90DFEB4476B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TP N4 - CRUD con Sql Server y Entity Framework", "TP N4 - CRUD con Sql Server y Entity Framework\TP N4 - CRUD con Sql Server y Entity Framework.csproj", "{73628086-5F8D-48EF-9F37-F3BB4B2B3EB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,10 @@ Global
 		{D7CC343C-5B43-4311-90D0-086ADDF5960F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7CC343C-5B43-4311-90D0-086ADDF5960F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7CC343C-5B43-4311-90D0-086ADDF5960F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73628086-5F8D-48EF-9F37-F3BB4B2B3EB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73628086-5F8D-48EF-9F37-F3BB4B2B3EB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73628086-5F8D-48EF-9F37-F3BB4B2B3EB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73628086-5F8D-48EF-9F37-F3BB4B2B3EB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,5 +56,6 @@ Global
 		{5E9A5D4A-D9E8-4AA9-B3A0-6AF998B11EEE} = {32404F12-A921-481F-9B07-69FCC7F03401}
 		{066744CA-BDBE-4F58-BD74-20DF67FA9FA6} = {4ECE06C6-FB42-417E-A3C4-56D96984CBD9}
 		{D7CC343C-5B43-4311-90D0-086ADDF5960F} = {DB9117FE-FDD2-436C-9758-9EF4C13CB960}
+		{73628086-5F8D-48EF-9F37-F3BB4B2B3EB8} = {CC33A506-E8A7-4AF3-92FF-C90DFEB4476B}
 	EndGlobalSection
 EndGlobal
